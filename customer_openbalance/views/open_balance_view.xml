@@ -1,0 +1,91 @@
+<odoo>
+    <data>
+        <record id="partner_open_balance_form" model="ir.ui.view">
+            <field name="name">partner.open.balance.form</field>
+            <field name="model">partner.open.balance</field>
+            <field name="arch" type="xml">
+                <form string="Open Balance">
+                    <sheet>
+                        <group>
+                            <field name="status"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" required="1"/>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <field name="move_line_id"/>
+                        </group>
+                        <group>
+                            <field name="paid_amount"/>
+                            <field name="total_amount"/>
+                            <field name="to_pay_amount"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="partner_open_balance_tree" model="ir.ui.view">
+            <field name="name">partner.open.balance.tree</field>
+            <field name="model">partner.open.balance</field>
+            <field name="arch" type="xml">
+                <tree string="Open Balance" delete="true">
+                    <field name="partner_id"/>
+                    <field name="reference"/>
+                    <field name="date"/>
+                    <field name="paid_amount"/>
+                    <field name="total_amount"/>
+                    <field name="to_pay_amount"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--  Action for Open Balance Form -->
+        <record id="action_partner_open_balance" model="ir.actions.act_window">
+            <field name="name">Open Balance</field>
+            <field name="res_model">partner.open.balance</field>
+            <field name="view_mode">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="mmc_view_openbala_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="button"
+                    >
+                        <i class="fa fa-fw o_button_icon fa fa-money"></i>
+
+                        <field string="Open Balance" name="open_balance_amount" widget="statinfo"/>
+                    </button>
+                </div>
+                <xpath expr="//page[@name='internal_notes']" position="before">
+
+                    <page string="Open Balance">
+                        <button name="generate_open_bal_partner" string="Generate Open Balance"
+                               class="oe_highlight" type="object"></button>
+                        <field name="open_balance_ids" widget="one2many_list">
+                            <tree editable="bottom">
+                                <field name="partner_id" invisible="1"/>
+                                <field name="reference"/>
+                                <field name="date"/>
+                                <field name="paid_amount"/>
+                                <field name="total_amount"/>
+                                <field name="to_pay_amount" readonly="1"/>
+                                <field name="status"/>
+                                <field name="move_line_id"/>
+                            </tree>
+                        </field>
+
+
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

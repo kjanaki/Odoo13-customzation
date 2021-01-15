@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_fomr_mm" model="ir.ui.view">
+        <field name="name">account.move.form.branch</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="is_openbalance_view"/>
+                <field name="company_id"/>
+            </xpath>
+        </field>
+
+
+    </record>
+    <record id="mmc_view_move_line_form" model="ir.ui.view">
+        <field name="name">account.move.line.form</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id"
+                       domain="['|', ('parent_id', '=', False), ('is_company', '=', True)]"
+                />
+            </xpath>
+            <xpath expr="//field[@name='debit']" position="replace">
+              <field name="debit" />
+            </xpath>
+            <xpath expr="//field[@name='credit']" position="replace">
+              <field name="credit" />
+            </xpath>
+
+
+        </field>
+    </record>
+
+
+</odoo>
