@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Customer Open Balance ",
+    'name': "Partner Open Balance ",
 
     'summary': """
              Open Balance Customization
@@ -28,8 +28,8 @@
     'data': [
           'security/ir.model.access.csv',
           'views/open_balance_view.xml',
-          'views/open_bal_payment.xml',
           'views/account_move_view.xml',
+          'views/open_bal_payment.xml',
     ],
 
 

@@ -7,19 +7,30 @@
                 <form string="Open Balance">
                     <sheet>
                         <group>
-                            <field name="status"/>
-                        </group>
-                        <group>
-                            <field name="partner_id" required="1"/>
+                            <group>
                             <field name="reference"/>
-                            <field name="date"/>
-                            <field name="move_line_id"/>
+                                <field name="date"/>
                         </group>
                         <group>
                             <field name="paid_amount"/>
                             <field name="total_amount"/>
                             <field name="to_pay_amount"/>
                         </group>
+                         </group>
+                        <group>
+
+                            <field name="partner_id" invisible="1" required="1"/>
+
+                              <field name="status"/>
+
+                            <field name="move_line_id" invisible="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Payment lines">
+                                <field name="payment_ids"  widget="one2many_list">
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -66,7 +77,7 @@
 
                     <page string="Open Balance">
                         <button name="generate_open_bal_partner" string="Generate Open Balance"
-                               class="oe_highlight" type="object"></button>
+                                class="oe_highlight" type="object"></button>
                         <field name="open_balance_ids" widget="one2many_list">
                             <tree editable="bottom">
                                 <field name="partner_id" invisible="1"/>
@@ -76,7 +87,7 @@
                                 <field name="total_amount"/>
                                 <field name="to_pay_amount" readonly="1"/>
                                 <field name="status"/>
-                                <field name="move_line_id"/>
+                                <field name="move_line_id" invisible="1"/>
                             </tree>
                         </field>
 

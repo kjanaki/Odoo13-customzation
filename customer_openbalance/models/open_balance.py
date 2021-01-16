@@ -26,7 +26,7 @@ class OpenBalance(models.Model):
     paid_amount = fields.Float(string="Paid amount")
     total_amount = fields.Float(string="Total Due amount")
     to_pay_amount = fields.Float(string="To Pay amount", compute="_compute_amount")
-    payment_id = fields.Many2one("account.payment")
+    payment_ids = fields.One2many("account.payment", "open_balance_ids")
     move_line_id = fields.Many2one("account.move.line")
     status = fields.Selection([
         ('open', 'Open'),
@@ -58,34 +58,61 @@ class ResPartner(models.Model):
                 opening_date = today.replace(month=int(month), day=31) + timedelta(days=1)
                 if opening_date > today:
                     opening_date = opening_date + relativedelta(years=-1)
-                if not rec.move_line_id:
+                if not rec.move_line_id and rec.status=="open":
                     print(self.env.company.id)
                     default_journal = self.env['account.journal'].search(
                         [('type', '=', 'general'), ('company_id', '=', self.env.company.id)], limit=1)
-                    default_account = self.env['ir.property'].get('property_account_receivable_id', 'res.partner')
+                    recev_default_account = self.env['ir.property'].get('property_account_receivable_id', 'res.partner')
+                    payable_default_account = self.env['ir.property'].get('property_account_payable_id', 'res.partner')
                     balancing_account = self.env.company.get_unaffected_earnings_account()
-                    account_opening_move = self.env['account.move'].create({
-                        "journal_id": default_journal.id,
-                        "ref":"Open Balance Entry",
-                        "date":opening_date,
-                        "is_openbalance_view": True,
-                        'line_ids': [
-                            (0, 0, {
-                                'name': ('Automatic Balancing Line'),
-                                'account_id': balancing_account.id,
-                                'debit': rec.to_pay_amount,
-                                'credit': 0,
-                            }),
-                            (0, 0, {
-                                'name': ('Debtors Line'),
-                                'account_id': default_account.id,
-                                'partner_id': self.id,
-                                'debit': 0,
-                                'credit': rec.to_pay_amount,
-                            })
-                        ]
-                    })
+                    partner_account_id = recev_default_account
+                    debit_amount,credit_amount=0
+                    if self.supplier:
+                        partner_account_id = payable_default_account
+                        account_opening_move = self.env['account.move'].create({
+                            "journal_id": default_journal.id,
+                            "ref": "Open Balance Entry",
+                            "date": opening_date,
+                            "is_openbalance_view": True,
+                            'line_ids': [
+                                (0, 0, {
+                                    'name': ('Automatic Balancing Line'),
+                                    'account_id': balancing_account.id,
+                                    'debit': rec.to_pay_amount,
+                                    'credit':0,
+                                }),
+                                (0, 0, {
+                                    'name': ('Open balanace for Creditors Line'),
+                                    'account_id': partner_account_id.id,
+                                    'partner_id': self.id,
+                                    'debit': 0,
+                                    'credit': rec.to_pay_amount,
+                                })
+                            ]
+                        })
+                    else:
+                        account_opening_move = self.env['account.move'].create({
+                            "journal_id": default_journal.id,
+                            "ref":"Open Balance Entry",
+                            "date":opening_date,
+                            "is_openbalance_view": True,
+                            'line_ids': [
+                                (0, 0, {
+                                    'name': ('Automatic Balancing Line'),
+                                    'account_id': balancing_account.id,
+                                    'debit': 0 ,
+                                    'credit': rec.to_pay_amount,
+                                }),
+                                (0, 0, {
+                                    'name': ('Opening Balance for Debtors Line'),
+                                    'account_id': partner_account_id.id,
+                                    'partner_id': self.id,
+                                    'debit': rec.to_pay_amount,
+                                    'credit': 0,
+                                })
+                            ]
+                        })
                     account_opening_move.action_post()
                     line_id = account_opening_move.line_ids.filtered(lambda c: c.partner_id and (
-                            c.account_id.id ==default_account.id))
+                            c.account_id.id ==partner_account_id.id))
                     rec.write({"move_line_id": line_id.id})

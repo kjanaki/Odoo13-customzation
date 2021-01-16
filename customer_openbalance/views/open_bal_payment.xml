@@ -1,0 +1,43 @@
+<odoo>
+
+    <data>
+
+        <record id="mmc_open_bal_form" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="payment_level"/>
+                    <field name="open_balance_ids" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'invisible': ['|',('payment_type','=','transfer'),('payment_level','not in',['open_bal','Both'])]}"
+                           domain="[('partner_id','=',partner_id)]"
+                           widget="many2many_tags"/>
+                    <field name="open_balance_amount" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'invisible': ['|',('payment_type','=','transfer'),('payment_level','not in',['open_bal','Both'])]}"
+                           readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mmc_open_bal_form" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="payment_level"/>
+                    <field name="open_balance_ids" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'invisible': ['|',('payment_type','=','transfer'),('payment_level','not in',['open_bal'])]}"
+                           domain="[('partner_id','=',partner_id),('status','=','open')]"
+                    />
+                    <field name="open_balance_amount" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'invisible': ['|',('payment_type','=','transfer'),('payment_level','not in',['open_bal'])]}"
+                           readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
