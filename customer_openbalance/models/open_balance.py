@@ -66,8 +66,9 @@ class ResPartner(models.Model):
                     payable_default_account = self.env['ir.property'].get('property_account_payable_id', 'res.partner')
                     balancing_account = self.env.company.get_unaffected_earnings_account()
                     partner_account_id = recev_default_account
-                    debit_amount,credit_amount=0
-                    if self.supplier:
+                    debit_amount = 0
+                    credit_amount = 0
+                    if self.supplier_rank:
                         partner_account_id = payable_default_account
                         account_opening_move = self.env['account.move'].create({
                             "journal_id": default_journal.id,
